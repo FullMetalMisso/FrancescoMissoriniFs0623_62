@@ -516,37 +516,36 @@ namespace Albergo.Controllers
             {
                 Db.conn.Open();
                 var cmdPren = new SqlCommand(@"INSERT INTO Prenotazioni 
-                                            (Prenotazione_ID, Data_Pren, Data_Arrivo, Data_Partenza, Pensione_ID, Ospite_ID, Camera_ID, )
-                                            VALUES(@prenotazione_id, @data_pren, @data_arrivo, @data_partenza, @pensione_id, @ospite_id, @camera_id)
-                                            OUTPUT INSERTED.Prenotazione_ID", Db.conn);
-                cmdPren.Parameters.AddWithValue("@prenotazione_id", pren.Prenotazione_ID);
-                cmdPren.Parameters.AddWithValue("@data_prend", pren.Data_Pren);
+                                    (Data_Pren, Data_Arrivo, Data_Partenza, Pensione_ID, Ospite_ID, Camera_ID)
+                                    VALUES(@data_pren, @data_arrivo, @data_partenza, @pensione_id, @ospite_id, @camera_id);
+                                    SELECT SCOPE_IDENTITY();", Db.conn);
+                cmdPren.Parameters.AddWithValue("@data_pren", pren.Data_Pren);
                 cmdPren.Parameters.AddWithValue("@data_arrivo", pren.Data_Arrivo);
                 cmdPren.Parameters.AddWithValue("@data_partenza", pren.Data_Partenza);
-                cmdPren.Parameters.AddWithValue("@pennsione_id", pren.Pensione_ID);
+                cmdPren.Parameters.AddWithValue("@pensione_id", pren.Pensione_ID);
                 cmdPren.Parameters.AddWithValue("@ospite_id", pren.Ospite_ID);
                 cmdPren.Parameters.AddWithValue("@camera_id", pren.Camera_ID);
-                var lastPren =  cmdPren.ExecuteScalar();
-                if(lastPren != null)
+                int lastInsertedId = Convert.ToInt32(cmdPren.ExecuteScalar());
+                if (lastInsertedId != 0)
                 {
-                    return RedirectToAction("Details", new { id = lastPren });
-
-                }   else
+                    return RedirectToAction("Details", new { id = lastInsertedId });
+                }
+                else
                 {
                     return View();
                 }
             }
             catch (Exception ex)
             {
-                
+                // Gestisci l'eccezione in modo appropriato, come registrare o visualizzare un messaggio di errore
+                Console.WriteLine(ex.Message);
+                return View();
             }
             finally
             {
                 Db.conn.Close();
             }
-            return View();
         }
-
 
     }
 }
