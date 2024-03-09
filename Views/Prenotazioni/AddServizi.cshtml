@@ -1,0 +1,120 @@
+﻿@model Albergo.Models.Prenotazione
+@{
+    ViewBag.Title = "AddServizi";
+    var servizi = TempData["Servizi"] as List<Albergo.Models.Servizio>;
+
+}
+
+<h2 class="text-center">Dettagli Prenotazione</h2>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Prenotazione ID:</h5>
+                    <p class="card-text">@Model.Prenotazione_ID</p>
+
+                    <h5 class="card-title">Ospite</h5>
+                    @if (Model.Ospite != null)
+                    {
+                        <p class="card-text">Nome: @Model.Ospite.Nome</p>
+                        <p class="card-text">Cognome: @Model.Ospite.Cognome</p>
+                    }
+                    else
+                    {
+                        <p class="card-text">Dettagli ospite non disponibili</p>
+                    }
+
+                    <h5 class="card-title">Camera</h5>
+                    @if (Model.Camera != null)
+                    {
+                        <p class="card-text">Numero: @Model.Camera.Numero</p>
+                    }
+                    else
+                    {
+                        <p class="card-text">Dettagli camera non disponibili</p>
+                    }
+
+                    <h5 class="card-title">Date</h5>
+                    <p class="card-text">Data Arrivo: @Model.Data_Arrivo.ToShortDateString()</p>
+                    <p class="card-text">Data Partenza: @Model.Data_Partenza.ToShortDateString()</p>
+
+                    @if (Model.Checkout != null)
+                    {
+                        <h5 class="card-title">Dettagli Checkout</h5>
+                        <p class="card-text">Notti: @Model.Checkout.Notti</p>
+                        <p class="card-text">Totale Servizi: @Model.Checkout.TotServizi.ToString("C")</p>
+                        <p class="card-text">Totale Prenotazione: @Model.Checkout.TotPren.ToString("C")</p>
+                    }
+                    else
+                    {
+                        <p class="card-text">Dettagli checkout non disponibili</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h2 class="text-center mt-4">Aggiungi Servizi</h2>
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <form method="post" action="@Url.Action("AddServizi", "Prenotazioni")">
+                <input type="hidden" id="Prenotazione_ID" name="Prenotazione_ID" value="@Model.Prenotazione_ID">
+                <input type="hidden" id="selectedServizio_ID" name="selectedServizio_ID" value="">
+                <div class="form-group">
+                    <label for="Servizio_ID">Servizio:</label>
+                    <div class="form-group">
+
+                        @if (servizi != null)
+                        {
+                            <label for="Servizio_ID"><strong>Servizio:</strong></label>
+                            <select id="Servizio_ID" name="Servizio_ID" class="form-control" onchange="updateSelectedServizioID(this)">
+                                @foreach (var servizio in servizi)
+                                {
+                                    <option value="@servizio.Servizio_ID">@servizio.Tipo</option>
+                                }
+                            </select>
+
+                        }
+                    </div>
+                
+                <div class="form-group">
+                    <label for="Data_Serv">Data Servizio:</label>
+                    <input type="date" class="form-control" id="Data_Serv" name="Data_Serv" min="@Model.Data_Arrivo.ToString("yyyy-MM-dd")" max="@Model.Data_Partenza.ToString("yyyy-MM-dd")" onchange="filterDates()">
+                </div>
+                <div class="form-group">
+                    <label for="Quantita">Quantità:</label>
+                    <input type="number" class="form-control" id="Quantita" name="Quantita" min="1">
+                </div>
+                <div class="form-group">
+                    <label for="PrezzoServ">Prezzo Servizio:</label>
+                    <input type="text" class="form-control" id="PrezzoServ" name="PrezzoServ">
+                </div>
+                <button type="submit" class="btn btn-info">Invia</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function updateSelectedServizioID(selectElement) {
+        var selectedServizioID = selectElement.value;
+        document.getElementById("selectedServizio_ID").value = selectedServizioID;
+    }
+</script>
+
+<script>
+    function filterDates() {
+        var dataArrivo = new Date('@Model.Data_Arrivo.ToString("yyyy-MM-dd")');
+        var dataPartenza = new Date('@Model.Data_Partenza.ToString("yyyy-MM-dd")');
+        var dataServInput = document.getElementById("Data_Serv");
+        var dataServ = new Date(dataServInput.value);
+
+        if (dataServ < dataArrivo || dataServ > dataPartenza) {
+            dataServInput.value = '';
+        }
+    }
+</script>

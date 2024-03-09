@@ -1,0 +1,37 @@
+﻿<main aria-labelledby="title">
+   <h2>Pensioni complete </h2>
+    <p>Premi per ricercare il numero totale di pensioni complete</p>
+
+    <button id="fetchCountButton">Calcola</button>
+    <div id="count-container"></div>
+
+    <script>
+        document.getElementById('fetchCountButton').addEventListener('click', function () {
+            fetch('/Prenotazioni/GetPensioneCompleta')
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Risposta JSON ricevuta:", data); // Aggiungi un log per vedere la risposta JSON
+                    if (data.error) {
+                        console.error('Si è verificato un errore durante la richiesta:', data.error);
+                    } else {
+                        if (data.NumeroPrenotazioni !== undefined) {
+                            // Creiamo un nuovo elemento <p> e aggiungiamo il testo all'interno
+                            const paragraph = document.createElement('p');
+                            paragraph.textContent = 'Numero di prenotazioni: ' + data.NumeroPrenotazioni;
+                            // Aggiungiamo il nuovo elemento <p> al contenitore
+                            document.getElementById('count-container').innerHTML = '';
+                            document.getElementById('count-container').appendChild(paragraph);
+                        } else {
+                            console.error('La proprietà "NumeroPrenotazioni" non è definita nella risposta JSON.');
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Si è verificato un errore durante la richiesta:', error);
+                });
+        });
+
+
+
+    </script>
+</main>
